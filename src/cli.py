@@ -1,14 +1,6 @@
 
 import click
 
-ascii_snek = """\
-    --..,_                     _,.--.
-       `'.'.                .'`__ o  `;__.
-          '.'.            .'.'`  '---'`  `
-            '.`'--....--'`.'
-              `'--....--'`
-"""
-
 @click.command()
 @click.argument('standards', type=click.Path(exists=True))
 @click.argument('mel', type=click.Path(exists=True))
@@ -22,7 +14,6 @@ def main(standards, mel):
     print(standards)
     print(mel)
 
-    print(ascii_snek)
 
 if __name__ == '__main__':
 
