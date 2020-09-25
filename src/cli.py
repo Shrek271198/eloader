@@ -1,5 +1,7 @@
 
 import click
+from eload import eload
+
 
 @click.command()
 @click.argument('standards', type=click.Path(exists=True))
@@ -11,9 +13,7 @@ def main(standards, mel):
 
     MEL is an excel file that contains the Mechanical Equipment List.
     """
-    print(standards)
-    print(mel)
-
+    eload(standards, mel)
 
 if __name__ == '__main__':
 
