@@ -11,7 +11,7 @@ setup(
     url='https://www.technogen.com.au/',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    install_requires=['pytest'],
+    install_requires=['click', 'pytest'],
     extras_require={},
     entry_points={
         'console_scripts': [
