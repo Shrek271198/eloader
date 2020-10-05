@@ -24,6 +24,7 @@ class ProjectStandard:
     date_prepared: date
     approved_by: str
     date_approved: date
+
     avg_count: float
     starters: float
 
@@ -33,6 +34,9 @@ class ProjectStandard:
 
     min_thermistor: float
     max_thermistor: float
+
+    min_rtd: float
+    max_rtd: float
 
     substation_cost: float
     max_cable_size: float
@@ -123,7 +127,43 @@ class MCCLoadList:
     #total
 
 
+def read_standards(standards):
+    """ Create ProjectStandard object from a Project Standards excel file."""
+
+    from openpyxl import load_workbook
+    wb = load_workbook(filename = standards)
+    ws = wb.active
+
+    standards = ProjectStandard(
+        ws['E5'].value,
+        ws['E10'].value,
+        ws['E11'].value,
+        ws['E12'].value,
+        ws['E15'].value,
+        ws['E16'].value,
+        ws['E17'].value,
+        ws['E18'].value,
+        ws['E21'].value,
+        ws['E22'].value,
+        ws['E23'].value,
+        ws['E24'].value,
+        ws['E25'].value,
+        ws['E26'].value,
+        0,
+        0,
+        ws['E37'].value,
+        ws['E38'].value,
+        ws['E39'].value,
+        ws['C43'].value,
+        ws['E43'].value,
+        ws['C44'].value,
+        ws['E44'].value,
+        ws['D47'].value,
+        ws['D49'].value,
+    )
+
+    return standards
+
 def eload(standards, mel):
 
-    print(standards)
-    print(mel)
+    read_standards(standards)
