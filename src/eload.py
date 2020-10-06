@@ -5,6 +5,11 @@ from typing import List
 from dataclasses import dataclass, field
 
 
+class OperationMode(Enum):
+    DUTY = 1
+    STANDBY = 2
+
+
 @dataclass
 class ProjectStandard:
     """ Class for storing Project standard details."""
@@ -41,11 +46,6 @@ class ProjectStandard:
 
     substation_cost: float
     max_cable_size: float
-
-
-class OperationMode(Enum):
-    DUTY = 1
-    STANDBY = 2
 
 
 @dataclass
@@ -132,6 +132,7 @@ class MotorControlCenter:
 class MCCLoadList:
     """Class for MCC Load summaries"""
 
+    standard: ProjectStandard
     load: List[MotorControlCenter]
 
     # total_connected_load_kw
@@ -216,5 +217,8 @@ def read_mel(mel):
 
 def eload(standards, mel):
 
-    print(read_standards(standards))
-    print(read_mel(mel))
+    standard = read_standards(standards)
+    mel = read_mel(mel)
+
+    # Creating MCC
+
