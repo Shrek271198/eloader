@@ -52,21 +52,6 @@ class ProjectStandard:
 class MechanicalEquipment:
     """Class for Mechanical Equipment details."""
 
-    __slots__ = [
-        "area",
-        "type",
-        "number",
-        "name",
-        "workpack",
-        "mcc_number",
-        "installed_power",
-        "starter_type",
-        "voltage",
-        "operation_mode",
-        "rev",
-        "procurement_rating",
-        "rating_description",
-    ]
     area: str
     type: str
     number: str
@@ -79,6 +64,7 @@ class MechanicalEquipment:
     operation_mode: OperationMode
     rev: str
     procurement_rating: int
+    tag_number: str = field(init = False)
 
     # installed
     # pf
@@ -90,36 +76,10 @@ class MechanicalEquipment:
     # max_kvar
     # avg_load_kw
 
-    def tag_number(self):
-        return self.area + self.type + self.number
-
-
-@dataclass
-class MechanicalEquipmentList:
-    """Class for Mechanical Equipment List."""
-
-    mel: List[MechanicalEquipment] = field(default_factory=list)
-    mcc_numbers: list = field(init = False)
-    mcc: dict = field(init = False)
-
     def __post_init__(self):
 
-        # Init mcc_numbers
-        self.mcc_numbers = []
-        for me in self.mel:
-            if me.mcc_number not in self.mcc_numbers:
-                self.mcc_numbers.append(me.mcc_number)
-
-
-        # Init mcc
-        self.mcc = {}
-        for number in self.mcc_numbers:
-            self.mcc[number] = []
-
-        for me in self.mel:
-            self.mcc[me.mcc_number].append(me)
-
-
+        # Init tag_number
+        self.tag_number = self.area + self.type + self.number
 
 
 @dataclass
@@ -154,6 +114,35 @@ class MotorControlCenter:
 
     # tx_size
     # spare_tx
+
+
+@dataclass
+class MechanicalEquipmentList:
+    """Class for Mechanical Equipment List."""
+
+    mel: List[MechanicalEquipment] = field(default_factory=list)
+    mcc_numbers: list = field(init = False)
+    mcc: dict = field(init = False)
+
+    def __post_init__(self):
+
+        # Init mcc_numbers
+        self.mcc_numbers = []
+        for me in self.mel:
+            if me.mcc_number not in self.mcc_numbers:
+                self.mcc_numbers.append(me.mcc_number)
+
+
+        # Init mcc
+        self.mcc = {}
+        for number in self.mcc_numbers:
+            self.mcc[number] = MotorControlCenter()
+
+        for me in self.mel:
+            self.mcc[me.mcc_number].list.append(me)
+
+
+
 
 
 @dataclass
@@ -249,6 +238,10 @@ def eload(standards, mel):
 
     STANDARD = read_standards(standards)
     MEL = read_mel(mel)
+
+    import pdb
+    pdb.set_trace()
+
 
 
 
