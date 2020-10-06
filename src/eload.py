@@ -4,7 +4,7 @@ from typing import List
 
 from dataclasses import dataclass, field
 
-from utility import vlookup
+from utility import vlookup, round_up as round
 from data import MOTOR_POWER_FACTOR, LOAD_FACTOR
 import math
 
@@ -60,8 +60,8 @@ class LightingEquipment:
     power_factor: float = 1
     load_factor: float = 0.75
     diversity_utilisation: float = 0.9
+    efficiency: float = 1
 
-    efficiency: float = field(init = False)
     kva: float = field(init = False)
     avg_load_factor: float = field(init = False)
     max_kw: float = field(init = False)
@@ -71,26 +71,32 @@ class LightingEquipment:
 
     def __post_init__(self):
 
-        # Init efficiency
-        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
-
         # Init kva
-        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        try:
+            self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        except:
+            self.kva = 0
 
         # Init avg_load_factor
-        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+        self.avg_load_factor = round(self.load_factor*self.diversity_utilisation, 3)
 
         # Init max_kw
-        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        try:
+            self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        except:
+            self.max_kw = 0
 
         # Init max_kvar
-        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+        self.max_kvar = self.max_kw
 
         # Init max_kva
         self.max_kva = round(self.kva*self.load_factor, 1)
 
         # Init max_load_kw
-        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+        try:
+            self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+        except:
+            self.avg_load_kw = 0
 
 
 @dataclass
@@ -102,8 +108,8 @@ class UPSEquipment:
     power_factor: float = 1
     load_factor: float = 0.75
     diversity_utilisation: float = 0.9
+    efficiency: float = 1
 
-    efficiency: float = field(init = False)
     kva: float = field(init = False)
     avg_load_factor: float = field(init = False)
     max_kw: float = field(init = False)
@@ -113,26 +119,32 @@ class UPSEquipment:
 
     def __post_init__(self):
 
-        # Init efficiency
-        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
-
         # Init kva
-        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        try:
+            self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        except:
+            self.kva = 0
 
         # Init avg_load_factor
-        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+        self.avg_load_factor = round(self.load_factor*self.diversity_utilisation, 3)
 
         # Init max_kw
-        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        try:
+            self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        except:
+            self.max_kw = 0
 
         # Init max_kvar
-        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+        self.max_kvar = self.max_kw
 
         # Init max_kva
         self.max_kva = round(self.kva*self.load_factor, 1)
 
         # Init max_load_kw
-        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+        try:
+            self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+        except:
+            self.avg_load_kw = 0
 
 
 @dataclass
@@ -144,8 +156,8 @@ class FieldEquipment:
     power_factor: float = 1
     load_factor: float = 0.75
     diversity_utilisation: float = 0.9
+    efficiency: float = 1
 
-    efficiency: float = field(init = False)
     kva: float = field(init = False)
     avg_load_factor: float = field(init = False)
     max_kw: float = field(init = False)
@@ -155,27 +167,32 @@ class FieldEquipment:
 
     def __post_init__(self):
 
-        # Init efficiency
-        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
-
         # Init kva
-        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        try:
+            self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+        except:
+            self.kva = 0
 
         # Init avg_load_factor
-        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+        self.avg_load_factor = round(self.load_factor*self.diversity_utilisation, 3)
 
         # Init max_kw
-        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        try:
+            self.max_kw = round(self.installed_kw*self.load_factor, 1)
+        except:
+            self.max_kw = 0
 
         # Init max_kvar
-        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+        self.max_kvar = self.max_kw
 
         # Init max_kva
         self.max_kva = round(self.kva*self.load_factor, 1)
 
         # Init max_load_kw
-        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
-
+        try:
+            self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+        except:
+            self.avg_load_kw = 0
 
 
 @dataclass
@@ -237,7 +254,7 @@ class MechanicalEquipment:
             self.diversity_utilisation = vlookup(self.type, LOAD_FACTOR, 3)
 
         # Init avg_load_factor
-        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+        self.avg_load_factor = round(self.load_factor*self.diversity_utilisation, 2)
 
         # Init max_kw
         self.max_kw = round(self.installed_kw*self.load_factor, 1)
@@ -252,14 +269,13 @@ class MechanicalEquipment:
         self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
 
 
-
 @dataclass
 class MotorControlCenter:
     """Class for storing the electrical load details of a MCC."""
 
-    lighting_load: float
-    ups_load: float
-    fe_dist_load: float
+    lighting: LightingEquipment
+    ups: UPSEquipment
+    field_equipment: FieldEquipment
 
     mel: List[MechanicalEquipment] = field(default_factory=list)
 
@@ -322,6 +338,7 @@ class MCCLoadList:
     # total_ave_load
     # total_contingency_factor
     # total
+
 
 
 
@@ -405,9 +422,14 @@ def eload(standards, mel):
     # Init MCCs
     MCC = {}
     for number in MEL.mcc_numbers:
-        MCC[number] = MotorControlCenter(STANDARD.lighting_load,
-                                         STANDARD.ups_load,
-                                         STANDARD.fe_dist_load)
+        MCC[number] = MotorControlCenter(LightingEquipment(STANDARD.lighting_load),
+                                         UPSEquipment(STANDARD.ups_load),
+                                         FieldEquipment(STANDARD.fe_dist_load))
 
     for me in MEL.mel:
         MCC[me.mcc_number].mel.append(me)
+
+
+    import pdb
+    pdb.set_trace()
+
