@@ -5,7 +5,7 @@ from typing import List
 from dataclasses import dataclass, field
 
 from utility import vlookup
-from data import MOTOR_PF
+from data import MOTOR_POWER_FACTOR, LOAD_FACTOR
 
 class OperationMode(Enum):
     DUTY = 1
@@ -69,10 +69,11 @@ class MechanicalEquipment:
     tag_number: str = field(init = False)
 
     power_factor: float = field(init = False)
-    # kva
-    # load_factor
-    # diversity_utilisation
-    # avg_load_factor
+    efficiency: float = field(init = False)
+    kva: float = field(init = False)
+    load_factor: float = field(init = False)
+    diversity_utilisation: float = field(init = False)
+    avg_load_factor: float = field(init = False)
     # max_kw
     # max_kvar
     # max_kva
@@ -83,11 +84,32 @@ class MechanicalEquipment:
         # Init tag_number
         self.tag_number = self.area + self.type + self.number
 
-        # pf
+        # Init efficiency
+        self.efficiency = vlookup(self.installed_power, MOTOR_POWER_FACTOR, 1)
+
+        # Init power_factor
         if self.starter_type in ['VSD', 'VSD Dual']:
             self.power_factor = 0.9
         else:
-            self.power_factor = vlookup(self.installed_power, MOTOR_PF, 2)
+            self.power_factor = vlookup(self.installed_power, MOTOR_POWER_FACTOR, 2)
+
+        # Init kva
+        self.kva = round(self.installed_power/self.efficiency/self.power_factor, 1)
+
+        # Init load_factor
+        if self.operation_mode == 2:
+            self.load_factor = 0
+        else:
+            self.load_factor = vlookup(self.type, LOAD_FACTOR, 2)
+
+        # Init diversity_utilisation
+        if self.operation_mode == 2:
+            self.diversity_utilisation = 0
+        else:
+            self.diversity_utilisation = vlookup(self.type, LOAD_FACTOR, 3)
+
+        # Init avg_load_factor
+        self.avg_load_factor = self.load_factor*self.diversity_utilisation
 
 
 @dataclass
@@ -246,9 +268,6 @@ def eload(standards, mel):
 
     STANDARD = read_standards(standards)
     MEL = read_mel(mel)
-
-    import pdb
-    pdb.set_trace()
 
 
 
