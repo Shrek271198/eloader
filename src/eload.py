@@ -4,6 +4,8 @@ from typing import List
 
 from dataclasses import dataclass, field
 
+from utility import vlookup
+from data import MOTOR_PF
 
 class OperationMode(Enum):
     DUTY = 1
@@ -66,20 +68,26 @@ class MechanicalEquipment:
     procurement_rating: int
     tag_number: str = field(init = False)
 
-    # installed
-    # pf
+    power_factor: float = field(init = False)
     # kva
     # load_factor
     # diversity_utilisation
     # avg_load_factor
     # max_kw
     # max_kvar
-    # avg_load_kw
+    # max_kva
+    # avg_load_kw#
 
     def __post_init__(self):
 
         # Init tag_number
         self.tag_number = self.area + self.type + self.number
+
+        # pf
+        if self.starter_type in ['VSD', 'VSD Dual']:
+            self.power_factor = 0.9
+        else:
+            self.power_factor = vlookup(self.installed_power, MOTOR_PF, 2)
 
 
 @dataclass
