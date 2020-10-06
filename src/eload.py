@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from utility import vlookup
 from data import MOTOR_POWER_FACTOR, LOAD_FACTOR
+import math
 
 class OperationMode(Enum):
     DUTY = 1
@@ -60,7 +61,7 @@ class MechanicalEquipment:
     name: str
     workpack: str
     mcc_number: str
-    installed_power: float
+    installed_kw: float
     starter_type: str
     voltage: float
     operation_mode: OperationMode
@@ -74,10 +75,10 @@ class MechanicalEquipment:
     load_factor: float = field(init = False)
     diversity_utilisation: float = field(init = False)
     avg_load_factor: float = field(init = False)
-    # max_kw
-    # max_kvar
-    # max_kva
-    # avg_load_kw#
+    max_kw: float = field(init = False)
+    max_kvar: float = field(init = False)
+    max_kva: float = field(init = False)
+    avg_load_kw: float = field(init = False)
 
     def __post_init__(self):
 
@@ -85,16 +86,16 @@ class MechanicalEquipment:
         self.tag_number = self.area + self.type + self.number
 
         # Init efficiency
-        self.efficiency = vlookup(self.installed_power, MOTOR_POWER_FACTOR, 1)
+        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
 
         # Init power_factor
         if self.starter_type in ['VSD', 'VSD Dual']:
             self.power_factor = 0.9
         else:
-            self.power_factor = vlookup(self.installed_power, MOTOR_POWER_FACTOR, 2)
+            self.power_factor = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 2)
 
         # Init kva
-        self.kva = round(self.installed_power/self.efficiency/self.power_factor, 1)
+        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
 
         # Init load_factor
         if self.operation_mode == 2:
@@ -110,6 +111,19 @@ class MechanicalEquipment:
 
         # Init avg_load_factor
         self.avg_load_factor = self.load_factor*self.diversity_utilisation
+
+        # Init max_kw
+        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+
+        # Init max_kvar
+        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+
+        # Init max_kva
+        self.max_kva = round(self.kva*self.load_factor, 1)
+
+        # Init max_load_kw
+        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+
 
 
 @dataclass
