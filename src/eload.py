@@ -95,10 +95,27 @@ class MechanicalEquipment:
 
 
 @dataclass
+class MechanicalEquipmentList:
+    """Class for Mechanical Equipment List."""
+
+    mel: List[MechanicalEquipment] = field(default_factory=list)
+    mcc_numbers: list = field(init = False)
+
+    def __post_init__(self):
+
+        # Init mcc_numbers
+        self.mcc_numbers = []
+        for me in self.mel:
+            if me.mcc_number not in self.mcc_numbers:
+                self.mcc_numbers.append(me.mcc_number)
+
+
+
+@dataclass
 class MotorControlCenter:
     """Class for storing the electrical load details of a MCC."""
 
-    mel: List[MechanicalEquipment] = field(default_factory=list)
+    list: List[MechanicalEquipment] = field(default_factory=list)
 
     ##total_installed_kw
     ##total_kva
@@ -132,7 +149,6 @@ class MotorControlCenter:
 class MCCLoadList:
     """Class for MCC Load summaries"""
 
-    standard: ProjectStandard
     load: List[MotorControlCenter]
 
     # total_connected_load_kw
@@ -143,6 +159,7 @@ class MCCLoadList:
     # total_ave_load
     # total_contingency_factor
     # total
+
 
 
 def read_standards(standards):
@@ -212,13 +229,18 @@ def read_mel(mel):
 
         mel.append(me)
 
-    return mel
+    MEL = MechanicalEquipmentList(mel)
+
+    return MEL
 
 
 def eload(standards, mel):
 
-    standard = read_standards(standards)
-    mel = read_mel(mel)
+    STANDARD = read_standards(standards)
+    MEL = read_mel(mel)
 
     # Creating MCC
+    import pdb
+    pdb.set_trace()
+
 
