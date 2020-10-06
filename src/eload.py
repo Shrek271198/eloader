@@ -69,6 +69,29 @@ class LightingEquipment:
     max_kva: float = field(init = False)
     avg_load_kw: float = field(init = False)
 
+    def __post_init__(self):
+
+        # Init efficiency
+        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
+
+        # Init kva
+        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+
+        # Init avg_load_factor
+        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+
+        # Init max_kw
+        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+
+        # Init max_kvar
+        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+
+        # Init max_kva
+        self.max_kva = round(self.kva*self.load_factor, 1)
+
+        # Init max_load_kw
+        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+
 
 @dataclass
 class UPSEquipment:
@@ -88,6 +111,29 @@ class UPSEquipment:
     max_kva: float = field(init = False)
     avg_load_kw: float = field(init = False)
 
+    def __post_init__(self):
+
+        # Init efficiency
+        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
+
+        # Init kva
+        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+
+        # Init avg_load_factor
+        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+
+        # Init max_kw
+        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+
+        # Init max_kvar
+        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+
+        # Init max_kva
+        self.max_kva = round(self.kva*self.load_factor, 1)
+
+        # Init max_load_kw
+        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+
 
 @dataclass
 class FieldEquipment:
@@ -106,6 +152,30 @@ class FieldEquipment:
     max_kvar: float = field(init = False)
     max_kva: float = field(init = False)
     avg_load_kw: float = field(init = False)
+
+    def __post_init__(self):
+
+        # Init efficiency
+        self.efficiency = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 1)
+
+        # Init kva
+        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
+
+        # Init avg_load_factor
+        self.avg_load_factor = self.load_factor*self.diversity_utilisation
+
+        # Init max_kw
+        self.max_kw = round(self.installed_kw*self.load_factor, 1)
+
+        # Init max_kvar
+        self.max_kvar = round(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+
+        # Init max_kva
+        self.max_kva = round(self.kva*self.load_factor, 1)
+
+        # Init max_load_kw
+        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
+
 
 
 @dataclass
