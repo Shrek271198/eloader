@@ -100,6 +100,7 @@ class MechanicalEquipmentList:
 
     mel: List[MechanicalEquipment] = field(default_factory=list)
     mcc_numbers: list = field(init = False)
+    mcc: dict = field(init = False)
 
     def __post_init__(self):
 
@@ -108,6 +109,16 @@ class MechanicalEquipmentList:
         for me in self.mel:
             if me.mcc_number not in self.mcc_numbers:
                 self.mcc_numbers.append(me.mcc_number)
+
+
+        # Init mcc
+        self.mcc = {}
+        for number in self.mcc_numbers:
+            self.mcc[number] = []
+
+        for me in self.mel:
+            self.mcc[me.mcc_number].append(me)
+
 
 
 
@@ -239,6 +250,5 @@ def eload(standards, mel):
     STANDARD = read_standards(standards)
     MEL = read_mel(mel)
 
-    # Creating MCC
 
 
