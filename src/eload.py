@@ -52,6 +52,63 @@ class ProjectStandard:
 
 
 @dataclass
+class LightingEquipment:
+    """Class for Lighting Equipment details."""
+
+    installed_kw: float
+
+    power_factor: float = 1
+    load_factor: float = 0.75
+    diversity_utilisation: float = 0.9
+
+    efficiency: float = field(init = False)
+    kva: float = field(init = False)
+    avg_load_factor: float = field(init = False)
+    max_kw: float = field(init = False)
+    max_kvar: float = field(init = False)
+    max_kva: float = field(init = False)
+    avg_load_kw: float = field(init = False)
+
+
+@dataclass
+class UPSEquipment:
+    """Class for UPS Equipment details."""
+
+    installed_kw: float
+
+    power_factor: float = 1
+    load_factor: float = 0.75
+    diversity_utilisation: float = 0.9
+
+    efficiency: float = field(init = False)
+    kva: float = field(init = False)
+    avg_load_factor: float = field(init = False)
+    max_kw: float = field(init = False)
+    max_kvar: float = field(init = False)
+    max_kva: float = field(init = False)
+    avg_load_kw: float = field(init = False)
+
+
+@dataclass
+class FieldEquipment:
+    """Class for Field Equipment details."""
+
+    installed_kw: float
+
+    power_factor: float = 1
+    load_factor: float = 0.75
+    diversity_utilisation: float = 0.9
+
+    efficiency: float = field(init = False)
+    kva: float = field(init = False)
+    avg_load_factor: float = field(init = False)
+    max_kw: float = field(init = False)
+    max_kvar: float = field(init = False)
+    max_kva: float = field(init = False)
+    avg_load_kw: float = field(init = False)
+
+
+@dataclass
 class MechanicalEquipment:
     """Class for Mechanical Equipment details."""
 
@@ -275,7 +332,6 @@ def eload(standards, mel):
     STANDARD = read_standards(standards)
     MEL = read_mel(mel)
 
-
     # Init MCCs
     MCC = {}
     for number in MEL.mcc_numbers:
@@ -285,9 +341,3 @@ def eload(standards, mel):
 
     for me in MEL.mel:
         MCC[me.mcc_number].mel.append(me)
-
-
-    import pdb
-    pdb.set_trace()
-
-
