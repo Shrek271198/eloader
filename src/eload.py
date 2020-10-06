@@ -37,7 +37,7 @@ class ProjectStandard:
     avg_count: float
     starters: float
 
-    misc_load: float
+    lighting_load: float
     ups_load: float
     fe_dist_load: float
 
@@ -130,10 +130,15 @@ class MechanicalEquipment:
 class MotorControlCenter:
     """Class for storing the electrical load details of a MCC."""
 
+    lighting_load: float
+    ups_load: float
+    fe_dist_load: float
+
     mel: List[MechanicalEquipment] = field(default_factory=list)
 
     ##total_installed_kw
     ##total_kva
+    ##total_max_kw
     ##total_max_kvar
     ##total_max_kva
     ##total_avg_load_kw
@@ -177,16 +182,6 @@ class MechanicalEquipmentList:
                 self.mcc_numbers.append(me.mcc_number)
 
 
-        # Init mcc
-        self.mcc = {}
-        for number in self.mcc_numbers:
-            self.mcc[number] = MotorControlCenter()
-
-        for me in self.mel:
-            self.mcc[me.mcc_number].mel.append(me)
-
-
-@dataclass
 class MCCLoadList:
     """Class for MCC Load summaries"""
 
@@ -281,5 +276,18 @@ def eload(standards, mel):
     MEL = read_mel(mel)
 
 
+    # Init MCCs
+    MCC = {}
+    for number in MEL.mcc_numbers:
+        MCC[number] = MotorControlCenter(STANDARD.lighting_load,
+                                         STANDARD.ups_load,
+                                         STANDARD.fe_dist_load)
+
+    for me in MEL.mel:
+        MCC[me.mcc_number].mel.append(me)
+
+
+    import pdb
+    pdb.set_trace()
 
 
