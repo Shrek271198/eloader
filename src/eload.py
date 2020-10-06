@@ -130,7 +130,7 @@ class MechanicalEquipment:
 class MotorControlCenter:
     """Class for storing the electrical load details of a MCC."""
 
-    list: List[MechanicalEquipment] = field(default_factory=list)
+    mel: List[MechanicalEquipment] = field(default_factory=list)
 
     ##total_installed_kw
     ##total_kva
@@ -183,10 +183,7 @@ class MechanicalEquipmentList:
             self.mcc[number] = MotorControlCenter()
 
         for me in self.mel:
-            self.mcc[me.mcc_number].list.append(me)
-
-
-
+            self.mcc[me.mcc_number].mel.append(me)
 
 
 @dataclass
