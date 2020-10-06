@@ -240,7 +240,5 @@ def eload(standards, mel):
     MEL = read_mel(mel)
 
     # Creating MCC
-    import pdb
-    pdb.set_trace()
 
 
