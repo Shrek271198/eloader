@@ -1,12 +1,11 @@
-import math
+from math import tan, acos
 from datetime import date
 from enum import Enum
 from typing import List
 
 from data import LOAD_FACTOR, MOTOR_POWER_FACTOR
 from dataclasses import dataclass, field
-from utility import round_up
-from utility import vlookup
+from utility import round_up, vlookup
 
 
 class OperationMode(Enum):
@@ -143,7 +142,7 @@ class UPSEquipment:
 
         # Init max_load_kw
         try:
-            self.avg_load_kw = round_up(self.installed_kw*self.avg_load_factor, 1)
+            self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
         except:
             self.avg_load_kw = 0
 
@@ -240,7 +239,7 @@ class MechanicalEquipment:
             self.power_factor = vlookup(self.installed_kw, MOTOR_POWER_FACTOR, 2)
 
         # Init kva
-        self.kva = round_up(self.installed_kw/self.efficiency/self.power_factor, 1)
+        self.kva = round(self.installed_kw/self.efficiency/self.power_factor, 1)
 
         # Init load_factor
         if self.operation_mode == 2:
@@ -255,19 +254,19 @@ class MechanicalEquipment:
             self.diversity_utilisation = vlookup(self.type, LOAD_FACTOR, 3)
 
         # Init avg_load_factor
-        self.avg_load_factor = round_up(self.load_factor*self.diversity_utilisation, 2)
+        self.avg_load_factor = round_up(self.load_factor*self.diversity_utilisation, 3)
 
         # Init max_kw
         self.max_kw = round_up(self.installed_kw*self.load_factor, 1)
 
         # Init max_kvar
-        self.max_kvar = round_up(self.max_kw*math.tan(math.acos(self.power_factor)), 1)
+        self.max_kvar = round(self.max_kw*round(tan(acos(self.power_factor)), 2), 1)
 
         # Init max_kva
-        self.max_kva = round_up(self.kva*self.load_factor, 1)
+        self.max_kva = round(self.kva*self.load_factor, 1)
 
         # Init max_load_kw
-        self.avg_load_kw = round_up(self.installed_kw*self.avg_load_factor, 1)
+        self.avg_load_kw = round(self.installed_kw*self.avg_load_factor, 1)
 
 
 @dataclass
@@ -280,6 +279,11 @@ class MotorControlCenter:
     mel: List[MechanicalEquipment] = field(default_factory=list)
 
     total_installed_kw: float = field(init = False)
+    total_kva: float = field(init = False)
+    total_max_kw: float = field(init = False)
+    total_max_kvar: float = field(init = False)
+    total_max_kva: float = field(init = False)
+    total_avg_load_kw: float = field(init = False)
 
     def __post_init__(self):
 
@@ -287,14 +291,39 @@ class MotorControlCenter:
         self.total_installed_kw = round((sum(e.installed_kw for e in self.mel) + \
                                   self.lighting.installed_kw  + \
                                   self.ups.installed_kw + \
-                                  self.field_equipment.installed_kw),1)
+                                  self.field_equipment.installed_kw), 1)
 
-    ##total_kva
-    ##total_max_kw
-    ##total_max_kvar
-    ##total_max_kva
+        # Init total_kva
+        self.total_kva = round((sum(e.kva for e in self.mel) + \
+                                  self.lighting.kva  + \
+                                  self.ups.kva + \
+                                  self.field_equipment.kva), 1)
+
+        # Init total_max_kw
+        self.total_max_kw = round((sum(e.max_kw for e in self.mel) + \
+                                  self.lighting.max_kw  + \
+                                  self.ups.max_kw + \
+                                  self.field_equipment.max_kw), 1)
+
+        # Init total_max_kvar
+        self.total_max_kvar = round((sum(e.max_kvar for e in self.mel) + \
+                                  self.lighting.max_kvar  + \
+                                  self.ups.max_kvar + \
+                                  self.field_equipment.max_kvar), 1)
+
+        # Init total_max_kva
+        self.total_max_kva = round((sum(e.max_kva for e in self.mel) + \
+                                  self.lighting.max_kva  + \
+                                  self.ups.max_kva + \
+                                  self.field_equipment.max_kva), 1)
+
+        # Init total_avg_load_kw
+        self.total_avg_load_kw = round((sum(e.avg_load_kw for e in self.mel) + \
+                                  self.lighting.avg_load_kw  + \
+                                  self.ups.avg_load_kw + \
+                                  self.field_equipment.avg_load_kw), 1)
+
     ##total_avg_load_kw
-
     ##total_connected_load_kw
     ##total_connected_load_kva
     ##max_demand_kw
@@ -442,7 +471,3 @@ def eload(standards, mel):
                                          UPSEquipment(STANDARD.ups_load),
                                          FieldEquipment(STANDARD.fe_dist_load),
                                          mcc_mel)
-
-    import pdb
-    pdb.set_trace()
-
