@@ -1,12 +1,13 @@
+import math
 from datetime import date
 from enum import Enum
 from typing import List
 
+from data import LOAD_FACTOR, MOTOR_POWER_FACTOR
 from dataclasses import dataclass, field
+from utility import round_up as round
+from utility import vlookup
 
-from utility import vlookup, round_up as round
-from data import MOTOR_POWER_FACTOR, LOAD_FACTOR
-import math
 
 class OperationMode(Enum):
     DUTY = 1
@@ -340,8 +341,6 @@ class MCCLoadList:
     # total
 
 
-
-
 def read_standards(standards):
     """ Create ProjectStandard object from a Project Standards excel file."""
 
@@ -428,8 +427,3 @@ def eload(standards, mel):
 
     for me in MEL.mel:
         MCC[me.mcc_number].mel.append(me)
-
-
-    import pdb
-    pdb.set_trace()
-
