@@ -323,27 +323,14 @@ class MotorControlCenter:
                                   self.ups.avg_load_kw + \
                                   self.field_equipment.avg_load_kw), 1)
 
-    ##total_avg_load_kw
-    ##total_connected_load_kw
-    ##total_connected_load_kva
-    ##max_demand_kw
-    ##max_demand_kvar
-    ##max_demand_kva
-
-    # total_ave_load
-    # substation_load_dist
+    # avg_substation_load_dist
     # ss_ladders
+
     # contingency_factor
     # spare_starters
     # avg_starter_load
     # total_spare_allocation
     # total_mcc_load_allowed
-
-    # total_contingency_factor
-    # total
-
-    # tx_size
-    # spare_tx
 
 
 @dataclass
