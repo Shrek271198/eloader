@@ -315,7 +315,6 @@ class MechanicalEquipmentList:
 
     mel: List[MechanicalEquipment] = field(default_factory=list)
     mcc_numbers: list = field(init = False)
-    mcc: dict = field(init = False)
 
     def __post_init__(self):
 
@@ -415,15 +414,23 @@ def read_mel(mel):
 
 def eload(standards, mel):
 
+    # Read in Project Standards excel file
     STANDARD = read_standards(standards)
+
+    # Read in client Mechanical Equipment List
     MEL = read_mel(mel)
 
-    # Init MCCs
+    # Initialise Motor Control Centers
     MCC = {}
     for number in MEL.mcc_numbers:
+
+        # Filter equipment by mcc_number
+        mcc_mel = []
+        for me in MEL.mel:
+            if me.mcc_number == number:
+                mcc_mel.append(me)
+
         MCC[number] = MotorControlCenter(LightingEquipment(STANDARD.lighting_load),
                                          UPSEquipment(STANDARD.ups_load),
-                                         FieldEquipment(STANDARD.fe_dist_load))
-
-    for me in MEL.mel:
-        MCC[me.mcc_number].mel.append(me)
+                                         FieldEquipment(STANDARD.fe_dist_load),
+                                         mcc_mel)
