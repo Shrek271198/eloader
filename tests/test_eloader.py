@@ -1,24 +1,11 @@
-from eload import MechanicalEquipment, LightingEquipment, UPSEquipment, FieldEquipment, MotorControlCenter
+from eload import MechanicalEquipment, LightingEquipment, UPSEquipment, FieldEquipment, MotorControlCenter, me_builder, client_mel_builder, mcc_builder
 
 from utility import round_up
 
 def test_me_1():
     row = (121, 'CN', '001', 'PRIMARY CRUSHER JIB CRANE ', 2, 'MCC-001', 20, 'DOL', 415, 'DUTY', 'A', 5)
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
-    assert me.tag_number =='121CN001'
+    me = me_builder(row)
+
     assert me.installed_kw == 20
     assert me.power_factor == 0.83
     assert me.kva == 25.6
@@ -33,21 +20,7 @@ def test_me_1():
 
 def test_me_2():
     row = (121, 'CP', '001', 'PRIMARY CRUSHING AIR COMPRESSOR ', 2, 'MCC-001', 7.5, 'FEEDER', 415, 'DUTY', 'A', 5)
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
-    assert me.tag_number =='121CP001'
+    me = me_builder(row)
     assert me.installed_kw == 7.5
     assert me.power_factor == 0.85
     assert me.kva == 9.6
@@ -62,20 +35,7 @@ def test_me_2():
 
 def test_me_3():
     row = (121, 'CR', '001', 'PRIMARY CRUSHER ', 2, 'MCC-001', 10, 'VSD', 415, 'DUTY', 'A', 5)
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
+    me = me_builder(row)
 
     assert me.tag_number =='121CR001'
     assert me.installed_kw == 10
@@ -92,21 +52,8 @@ def test_me_3():
 
 def test_me_4():
     row = (121, 'CV', '005', 'PRIMARY FEEDER DRIBBLE CONVEYOR ', 2, 'MCC-001', 2.2, 'DOL', 415, 'DUTY', 'A', 5)
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
-    assert me.tag_number =='121CV005'
+    me = me_builder(row)
+
     assert me.installed_kw == 2.2
     assert me.power_factor == 0.81
     assert me.kva == 3.1
@@ -121,20 +68,8 @@ def test_me_4():
 
 def test_me_5():
     row = (121, 'DR', '001', 'PRIMARY CRUSHING AIR COMPRESSED AIR DRYER ', 2, 'MCC-001', 0.1, 'DOL', 415, 'DUTY', 'A', 5)
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
+    me = me_builder(row)
+
     assert me.tag_number =='121DR001'
     assert me.installed_kw == 0.1
     assert me.power_factor == 0.55
@@ -153,7 +88,6 @@ def test_mcc():
     ups_load = 3
     fe_dist_load = 45
 
-    mcc_mel = []
 
     rows = []
     rows.append((121, 'CN', '001', 'PRIMARY CRUSHER JIB CRANE ', 2, 'MCC-001', 20, 'DOL', 415, 'DUTY', 'A', 5))
@@ -162,28 +96,12 @@ def test_mcc():
     rows.append((121, 'CV', '005', 'PRIMARY FEEDER DRIBBLE CONVEYOR ', 2, 'MCC-001', 2.2, 'DOL', 415, 'DUTY', 'A', 5))
     rows.append((121, 'DR', '001', 'PRIMARY CRUSHING AIR COMPRESSED AIR DRYER ', 2, 'MCC-001', 0.1, 'DOL', 415, 'DUTY', 'A', 5))
 
+    mcc_me_list = []
     for row in rows:
-        me = MechanicalEquipment(
-            str(row[0]),
-            str(row[1]),
-            str(row[2]),
-            str(row[3]),
-            str(row[4]),
-            str(row[5]),
-            float(row[6]),
-            str(row[7]),
-            float(row[8]),
-            row[9],
-            str(row[10]),
-            str(row[11]),
-        )
+        me = me_builder(row)
+        mcc_me_list.append(me)
 
-        mcc_mel.append(me)
-
-        mcc = MotorControlCenter(LightingEquipment(lighting_load),
-                                         UPSEquipment(ups_load),
-                                         FieldEquipment(fe_dist_load),
-                                         mcc_mel)
+    mcc = mcc_builder(lighting_load, ups_load, fe_dist_load, mcc_me_list)
 
     assert mcc.total_installed_kw == 87.8
     assert mcc.total_kva == 98.7

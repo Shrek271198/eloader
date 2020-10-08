@@ -336,7 +336,7 @@ class MotorControlCenter:
 
 
 @dataclass
-class MechanicalEquipmentList:
+class ClientMechanicalEquipmentList:
     """Class for Mechanical Equipment List."""
 
     mel: List[MechanicalEquipment] = field(default_factory=list)
@@ -404,8 +404,54 @@ def read_standards(standards):
 
     return standards
 
+def me_builder(row):
+    """ Creats a Mechanical Equipment object"""
 
-def read_mel(mel):
+    me = MechanicalEquipment(
+        str(row[0]),
+        str(row[1]),
+        str(row[2]),
+        str(row[3]),
+        str(row[4]),
+        str(row[5]),
+        float(row[6]),
+        str(row[7]),
+        float(row[8]),
+        row[9],
+        str(row[10]),
+        str(row[11]),
+    )
+
+    return me
+
+
+def client_mel_builder(rows):
+    """ Creates a  ClientMechanicalEquipmentList from ME excel row data"""
+
+    me_list = []
+
+    for row in rows:
+        me = me_builder(row)
+        me_list.append(me)
+
+    CMEL = ClientMechanicalEquipmentList(me_list)
+
+    return CMEL
+
+
+def mcc_builder(lighting_load, ups_load, fe_dist_load, mcc_me_list):
+    """ Creates a MCC objecte"""
+
+    mcc = MotorControlCenter(LightingEquipment(lighting_load),
+                                     UPSEquipment(ups_load),
+                                     FieldEquipment(fe_dist_load),
+                                     mcc_me_list)
+
+    return mcc
+
+
+
+def read_client_mel(mel):
     """Create a list of MechanicalEquipment objects from a MEL excel file."""
 
     from openpyxl import load_workbook
@@ -413,29 +459,9 @@ def read_mel(mel):
     wb = load_workbook(filename=mel,  data_only=True)
     ws = wb.active
 
-    mel = []
+    rows = ws.iter_rows(min_row=8, max_col=12, max_row=ws.max_row, values_only=True)
 
-    for row in ws.iter_rows(min_row=8, max_col=12, max_row=ws.max_row, values_only=True):
-        me = MechanicalEquipment(
-            str(row[0]),
-            str(row[1]),
-            str(row[2]),
-            str(row[3]),
-            str(row[4]),
-            str(row[5]),
-            float(row[6]),
-            str(row[7]),
-            float(row[8]),
-            row[9],
-            str(row[10]),
-            str(row[11]),
-        )
-
-        mel.append(me)
-
-    MEL = MechanicalEquipmentList(mel)
-
-    return MEL
+    return client_mel_builder(rows)
 
 
 def eload(standards, mel):
@@ -444,7 +470,7 @@ def eload(standards, mel):
     STANDARD = read_standards(standards)
 
     # Read in client Mechanical Equipment List
-    MEL = read_mel(mel)
+    MEL = read_client_mel(mel)
 
     # Initialise Motor Control Centers
     MCC = {}
