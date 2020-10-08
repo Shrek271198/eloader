@@ -16,7 +16,7 @@ def test_me_1():
         float(row[8]),
         row[9],
         str(row[10]),
-        int(row[11]),
+        str(row[11]),
     )
     assert me.tag_number =='121CN001'
     assert me.installed_kw == 20
@@ -45,7 +45,7 @@ def test_me_2():
         float(row[8]),
         row[9],
         str(row[10]),
-        int(row[11]),
+        str(row[11]),
     )
     assert me.tag_number =='121CP001'
     assert me.installed_kw == 7.5
@@ -74,7 +74,7 @@ def test_me_3():
         float(row[8]),
         row[9],
         str(row[10]),
-        int(row[11]),
+        str(row[11]),
     )
 
     assert me.tag_number =='121CR001'
@@ -104,7 +104,7 @@ def test_me_4():
         float(row[8]),
         row[9],
         str(row[10]),
-        int(row[11]),
+        str(row[11]),
     )
     assert me.tag_number =='121CV005'
     assert me.installed_kw == 2.2
@@ -133,7 +133,7 @@ def test_me_5():
         float(row[8]),
         row[9],
         str(row[10]),
-        int(row[11]),
+        str(row[11]),
     )
     assert me.tag_number =='121DR001'
     assert me.installed_kw == 0.1
@@ -175,7 +175,7 @@ def test_mcc():
             float(row[8]),
             row[9],
             str(row[10]),
-            int(row[11]),
+            str(row[11]),
         )
 
         mcc_mel.append(me)
@@ -191,3 +191,9 @@ def test_mcc():
     assert mcc.total_max_kvar == 52.4
     assert mcc.total_max_kva == 70.2
     assert mcc.total_avg_load_kw == 46.6
+
+    assert mcc.spare_starters == 2.0
+    assert mcc.contingency_load == 11.0
+    assert mcc.total_spare_allocation == 22.0
+    assert mcc.total_mcc_load_allowed == 109.8
+
