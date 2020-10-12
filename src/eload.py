@@ -1,6 +1,6 @@
 from datetime import date
 from enum import Enum
-from math import acos, tan
+from math import acos, tan, ceil
 from typing import List
 
 from data import (CONTINGENCY_TABLE, LOAD_FACTOR, MOTOR_POWER_FACTOR,
@@ -69,6 +69,7 @@ class LightingEquipment:
     max_kvar: float = field(init=False)
     max_kva: float = field(init=False)
     avg_load_kw: float = field(init=False)
+    avg_load_kva: float = field(init=False)
 
     def __post_init__(self):
 
@@ -97,6 +98,11 @@ class LightingEquipment:
         except:
             self.avg_load_kw = 0
 
+        try:
+            self.avg_load_kva = round_up(self.kva * self.avg_load_factor, 1)
+        except:
+            self.avg_load_kva = 0
+
 
 @dataclass
 class UPSEquipment:
@@ -115,6 +121,7 @@ class UPSEquipment:
     max_kvar: float = field(init=False)
     max_kva: float = field(init=False)
     avg_load_kw: float = field(init=False)
+    avg_load_kva: float = field(init=False)
 
     def __post_init__(self):
 
@@ -143,6 +150,10 @@ class UPSEquipment:
         except:
             self.avg_load_kw = 0
 
+        try:
+            self.avg_load_kva = round(self.kva * self.avg_load_factor, 1)
+        except:
+            self.avg_load_kva = 0
 
 @dataclass
 class FieldEquipment:
@@ -161,6 +172,7 @@ class FieldEquipment:
     max_kvar: float = field(init=False)
     max_kva: float = field(init=False)
     avg_load_kw: float = field(init=False)
+    avg_load_kva: float = field(init=False)
 
     def __post_init__(self):
 
@@ -188,6 +200,11 @@ class FieldEquipment:
             self.avg_load_kw = round_up(self.installed_kw * self.avg_load_factor, 1)
         except:
             self.avg_load_kw = 0
+
+        try:
+            self.avg_load_kva = round_up(self.kva * self.avg_load_factor, 1)
+        except:
+            self.avg_load_kva = 0
 
 
 @dataclass
@@ -219,6 +236,7 @@ class MechanicalEquipment:
     max_kvar: float = field(init=False)
     max_kva: float = field(init=False)
     avg_load_kw: float = field(init=False)
+    avg_load_kva: float = field(init=False)
     spare_capacity: float = field(init=False)
 
     def __post_init__(self):
@@ -256,10 +274,11 @@ class MechanicalEquipment:
 
         self.avg_load_kw = round(self.installed_kw * self.avg_load_factor, 1)
 
+        self.avg_load_kva = round(self.kva * self.avg_load_factor, 1)
+
         self.contingency_factor = vlookup(self.procurement_rating, CONTINGENCY_TABLE, 1)
 
         self.spare_capacity = round(self.contingency_factor * round((self.kva*self.avg_load_factor), 1), 2)
-
 
 
 @dataclass
@@ -278,6 +297,7 @@ class MotorControlCenter:
     total_max_kvar: float = field(init=False)
     total_max_kva: float = field(init=False)
     total_avg_load_kw: float = field(init=False)
+    total_avg_load_kva: float = field(init=False)
 
     contingency_factor_percent = float = 0.2
     misc_starters: int = 3
@@ -354,6 +374,16 @@ class MotorControlCenter:
             1,
         )
 
+        self.total_avg_load_kva = round(
+            (
+                sum(e.avg_load_kva for e in self.mel)
+                + self.lighting.avg_load_kva
+                #+ self.ups.avg_load_kva
+                + self.field_equipment.avg_load_kva
+            ),
+            1,
+        )
+
         self.spare_starters = round_up(
             (len(self.mel) + self.misc_starters) * self.contingency_factor_percent
         )
@@ -405,6 +435,7 @@ class MotorControlCenter:
 
         self.spare_tx = int(((self.tx_size - self.total_actual_contingency)/self.tx_size)*100)
 
+
 @dataclass
 class ElectricalLoadSummary:
     """Class for storing the MCC summary data."""
@@ -434,16 +465,25 @@ class ElectricalLoadSummary:
 
         self.connected_load_kva = round_up(sum(mcc.total_kva for mcc in self.mccl))
 
-        self.network_loss_kw = 0.02 * (sum(mcc.total_max_kw for mcc in self.mccl))
+        self.network_loss_kw = int(0.02 * (sum(ceil(mcc.total_max_kw) for mcc in self.mccl)))
 
         self.max_demand_kw = int(sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw)
 
-        self.network_loss_kvar = 0.02 * (sum(mcc.total_max_kvar for mcc in self.mccl))
+        self.network_loss_kvar = int(0.02 * (sum(ceil(mcc.total_max_kvar) for mcc in self.mccl)))
 
-        self.max_demand_kvar = int(sum(mcc.total_max_kvar for mcc in self.mccl) + self.network_loss_kvar)
+        self.max_demand_kvar = int(sum(ceil(mcc.total_max_kvar) for mcc in self.mccl) + self.network_loss_kvar)
 
+        self.network_loss_kva = ceil(0.02 * (sum(mcc.total_max_kva for mcc in self.mccl)))
 
+        self.max_demand_kva = int(sum(mcc.total_max_kva for mcc in self.mccl) + self.network_loss_kva)
 
+        self.ave_load_kva = int(sum(mcc.total_avg_load_kva for mcc in self.mccl))
+
+        self.contingency_factor_kva = int(sum(mcc.contingency_factor for mcc in self.mccl))
+
+        self.total_actual_contingency = int(sum(mcc.total_actual_contingency for mcc in self.mccl))
+
+        # TX Size -> Transformer BoQ
 
 @dataclass
 class ClientMechanicalEquipmentList:
