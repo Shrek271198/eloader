@@ -219,6 +219,7 @@ class MechanicalEquipment:
     max_kvar: float = field(init=False)
     max_kva: float = field(init=False)
     avg_load_kw: float = field(init=False)
+    spare_capacity: float = field(init=False)
 
     def __post_init__(self):
 
@@ -256,6 +257,9 @@ class MechanicalEquipment:
         self.avg_load_kw = round(self.installed_kw * self.avg_load_factor, 1)
 
         self.contingency_factor = vlookup(self.procurement_rating, CONTINGENCY_TABLE, 1)
+
+        self.spare_capacity = round(self.contingency_factor * round((self.kva*self.avg_load_factor), 1), 2)
+
 
 
 @dataclass

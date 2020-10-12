@@ -16,6 +16,7 @@ def test_me_1():
     assert me.max_kvar == 6.7
     assert me.max_kva == 12.8
     assert me.avg_load_kw == 1
+    assert me.spare_capacity == 0.26
 
 
 def test_me_2():
@@ -31,6 +32,7 @@ def test_me_2():
     assert me.max_kvar == 4.2
     assert me.max_kva == 8.6
     assert me.avg_load_kw == 6.4
+    assert me.spare_capacity == 1.64
 
 
 def test_me_3():
@@ -48,6 +50,7 @@ def test_me_3():
     assert me.max_kvar == 3.8
     assert me.max_kva == 9.7
     assert me.avg_load_kw == 4.8
+    assert me.spare_capacity == 1.16
 
 
 def test_me_4():
@@ -64,6 +67,7 @@ def test_me_4():
     assert me.max_kvar == 1.4
     assert me.max_kva == 2.8
     assert me.avg_load_kw == 1.9
+    assert me.spare_capacity == 0.54
 
 
 def test_me_5():
@@ -81,6 +85,7 @@ def test_me_5():
     assert me.max_kvar == 0.2
     assert me.max_kva == 0.2
     assert me.avg_load_kw == 0.1
+    assert me.spare_capacity == 0.04
 
 
 def test_mcc():
