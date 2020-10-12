@@ -1,10 +1,10 @@
 from datetime import date
 from enum import Enum
-from math import acos, tan, ceil
+from math import acos, ceil, tan
 from typing import List
 
 from data import (CONTINGENCY_TABLE, LOAD_FACTOR, MOTOR_POWER_FACTOR,
-                  VSD_CONTINGENCY)
+                  TRANSFORMER_PRICING, VSD_CONTINGENCY)
 from dataclasses import dataclass, field
 from utility import round_up, vlookup
 
@@ -458,6 +458,8 @@ class ElectricalLoadSummary:
     network_loss_kvar: int = field(init=False)
     network_loss_kva: int = field(init=False)
 
+    total_transformer_cost: int = field(init=False)
+
 
     def __post_init__(self):
 
@@ -483,7 +485,8 @@ class ElectricalLoadSummary:
 
         self.total_actual_contingency = int(sum(mcc.total_actual_contingency for mcc in self.mccl))
 
-        # TX Size -> Transformer BoQ
+        self.total_transformer_cost =sum(vlookup(mcc.tx_size, TRANSFORMER_PRICING, 1) for mcc in self.mccl)
+
 
 @dataclass
 class ClientMechanicalEquipmentList:
