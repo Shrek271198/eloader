@@ -266,6 +266,7 @@ class MechanicalEquipment:
 class MotorControlCenter:
     """Class for storing the electrical load details of a MCC."""
 
+    name: str
     lighting: LightingEquipment
     ups: UPSEquipment
     field_equipment: FieldEquipment
@@ -284,7 +285,6 @@ class MotorControlCenter:
     contingency_load: float = field(init=False)
     total_spare_allocation: float = field(init=False)
     total_mcc_load_allowed: float = field(init=False)
-    est_avg_dist_of_substation_to_building: float = field(init=False)
 
     max_voltage: float = field(init=False)
     contingency_factor: float = field(init=False)
@@ -405,9 +405,42 @@ class MotorControlCenter:
 
         self.spare_tx = int(((self.tx_size - self.total_actual_contingency)/self.tx_size)*100)
 
-#@dataclass
-#class ElectricalLoadSummary:
-#    """Class for storing the MCC summary data."""
+@dataclass
+class ElectricalLoadSummary:
+    """Class for storing the MCC summary data."""
+
+
+    mccl: List[MotorControlCenter] = field(default_factory=list)
+
+    connected_load_kw: int = field(init=False)
+    connected_load_kva: int = field(init=False)
+    max_demand_kw: int = field(init=False)
+    max_demand_kvar: int = field(init=False)
+    max_demand_kva: int = field(init=False)
+    ave_load_kva: int = field(init=False)
+    contingency_factor_kva: int = field(init=False)
+    total_actual_contingency: int = field(init=False)
+    tx_size: int = field(init=False)
+    spare_tx: int = field(init=False)
+
+    network_loss_kw: int = field(init=False)
+    network_loss_kvar: int = field(init=False)
+    network_loss_kva: int = field(init=False)
+
+
+    def __post_init__(self):
+
+        self.connected_load_kw = round_up(sum(mcc.total_installed_kw for mcc in self.mccl))
+
+        self.connected_load_kva = round_up(sum(mcc.total_kva for mcc in self.mccl))
+
+        self.network_loss_kw = 0.02 * (sum(mcc.total_max_kw for mcc in self.mccl))
+
+        self.max_demand_kw = int(sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw)
+
+        #self.network_loss_kvar = 0.02 * (sum(mcc.total_max_kvar for mcc in self.mccl))
+
+        #self.max_demand_kw = int(sum(mcc.total_max_kvar for mcc in self.mccl) + self.network_loss_kvar)
 
 
 
@@ -500,10 +533,11 @@ def client_mel_builder(rows):
     return CMEL
 
 
-def mcc_builder(lighting_load, ups_load, fe_dist_load, mcc_me_list):
+def mcc_builder(name, lighting_load, ups_load, fe_dist_load, mcc_me_list):
     """ Creates a MCC objecte"""
 
     mcc = MotorControlCenter(
+        name,
         LightingEquipment(lighting_load),
         UPSEquipment(ups_load),
         FieldEquipment(fe_dist_load),
@@ -543,9 +577,10 @@ def eload(standards, mel):
             if me.mcc_number == number:
                 mcc_mel.append(me)
 
-        MCC[number] = MotorControlCenter(
-            LightingEquipment(STANDARD.lighting_load),
-            UPSEquipment(STANDARD.ups_load),
-            FieldEquipment(STANDARD.fe_dist_load),
+        MCC[number] = mcc_builder(
+            number,
+            STANDARD.lighting_load,
+            STANDARD.ups_load,
+            STANDARD.fe_dist_load,
             mcc_mel,
         )

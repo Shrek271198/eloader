@@ -1,6 +1,8 @@
-from eload import MechanicalEquipment, LightingEquipment, UPSEquipment, FieldEquipment, MotorControlCenter, me_builder, client_mel_builder, mcc_builder
-
+from eload import (FieldEquipment, LightingEquipment, MechanicalEquipment,
+                   MotorControlCenter, UPSEquipment, client_mel_builder,
+                   mcc_builder, me_builder, read_standards, read_client_mel, ElectricalLoadSummary)
 from utility import round_up
+
 
 def test_me_1():
     row = (121, 'CN', '001', 'PRIMARY CRUSHER JIB CRANE ', 2, 'MCC-001', 20, 'DOL', 415, 'DUTY', 'A', 5)
@@ -93,7 +95,6 @@ def test_mcc():
     ups_load = 3
     fe_dist_load = 45
 
-
     rows = []
     rows.append((121, 'CN', '001', 'PRIMARY CRUSHER JIB CRANE ', 2, 'MCC-001', 20, 'DOL', 415, 'DUTY', 'A', 5))
     rows.append((121, 'CP', '001', 'PRIMARY CRUSHING AIR COMPRESSOR ', 2, 'MCC-001', 7.5, 'FEEDER', 415, 'DUTY', 'A', 5))
@@ -106,7 +107,7 @@ def test_mcc():
         me = me_builder(row)
         mcc_me_list.append(me)
 
-    mcc = mcc_builder(lighting_load, ups_load, fe_dist_load, mcc_me_list)
+    mcc = mcc_builder("mcc-001", lighting_load, ups_load, fe_dist_load, mcc_me_list)
 
     assert mcc.total_installed_kw == 87.8
     assert mcc.total_kva == 98.7
@@ -126,3 +127,51 @@ def test_mcc():
     assert mcc.tx_size == 500
     assert mcc.spare_tx == 85
 
+
+def test_els():
+
+    standards_file= "tests/fixtures/standards.xlsx"
+    mel_file= "tests/fixtures/mel.xlsx"
+
+    # Read in Project Standards excel file
+    STANDARD = read_standards(standards_file)
+
+    # Read in client Mechanical Equipment List
+    MEL = read_client_mel(mel_file)
+
+    # Initialise Motor Control Centers
+    MCC_List = []
+    for number in MEL.mcc_numbers:
+
+        # Filter equipment by mcc_number
+        mcc_mel = []
+        for me in MEL.mel:
+            if me.mcc_number == number:
+                mcc_mel.append(me)
+
+        MCC = mcc_builder(
+            number,
+            STANDARD.lighting_load,
+            STANDARD.ups_load,
+            STANDARD.fe_dist_load,
+            mcc_mel,
+        )
+
+        MCC_List.append(MCC)
+
+    els = ElectricalLoadSummary(MCC_List)
+
+    assert els.connected_load_kw == 546
+    assert els.connected_load_kva == 642
+    assert els.max_demand_kw == 413
+    #assert els.max_demand_kvar == 298
+#    max_demand_kva
+#    ave_load_kva
+#    contingency_factor_kva
+#    total_actual_contingency
+#    tx_size
+#    spare_tx
+#
+#    network_loss_kw
+#    network_loss_kvar
+#    network_loss_kva
