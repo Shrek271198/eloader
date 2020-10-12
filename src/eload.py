@@ -438,9 +438,10 @@ class ElectricalLoadSummary:
 
         self.max_demand_kw = int(sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw)
 
-        #self.network_loss_kvar = 0.02 * (sum(mcc.total_max_kvar for mcc in self.mccl))
+        self.network_loss_kvar = 0.02 * (sum(mcc.total_max_kvar for mcc in self.mccl))
 
-        #self.max_demand_kw = int(sum(mcc.total_max_kvar for mcc in self.mccl) + self.network_loss_kvar)
+        self.max_demand_kvar = int(sum(mcc.total_max_kvar for mcc in self.mccl) + self.network_loss_kvar)
+
 
 
 

@@ -165,13 +165,10 @@ def test_els():
     assert els.connected_load_kva == 642
     assert els.max_demand_kw == 413
     #assert els.max_demand_kvar == 298
+
 #    max_demand_kva
 #    ave_load_kva
 #    contingency_factor_kva
 #    total_actual_contingency
 #    tx_size
 #    spare_tx
-#
-#    network_loss_kw
-#    network_loss_kvar
-#    network_loss_kva
