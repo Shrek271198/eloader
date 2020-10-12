@@ -120,3 +120,9 @@ def test_mcc():
     assert mcc.total_spare_allocation == 22.0
     assert mcc.total_mcc_load_allowed == 109.8
 
+    assert mcc.max_voltage == 415
+    assert mcc.contingency_factor == 4.0
+    assert mcc.total_actual_contingency == 74.20
+    assert mcc.tx_size == 500
+    assert mcc.spare_tx == 85
+

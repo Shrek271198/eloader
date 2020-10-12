@@ -278,12 +278,20 @@ class MotorControlCenter:
     total_max_kva: float = field(init=False)
     total_avg_load_kw: float = field(init=False)
 
-    contingency_factor = float = 0.2
+    contingency_factor_percent = float = 0.2
     misc_starters: int = 3
     spare_starters: int = field(init=False)
     contingency_load: float = field(init=False)
     total_spare_allocation: float = field(init=False)
     total_mcc_load_allowed: float = field(init=False)
+    est_avg_dist_of_substation_to_building: float = field(init=False)
+
+    max_voltage: float = field(init=False)
+    contingency_factor: float = field(init=False)
+    total_actual_contingency: float = field(init=False)
+    tx_size: float = field(init=False)
+    spare_tx: int = field(init=False)
+
 
     def __post_init__(self):
         self.total_installed_kw = round(
@@ -347,7 +355,7 @@ class MotorControlCenter:
         )
 
         self.spare_starters = round_up(
-            (len(self.mel) + self.misc_starters) * self.contingency_factor
+            (len(self.mel) + self.misc_starters) * self.contingency_factor_percent
         )
 
         # Init contingency_load
@@ -368,8 +376,39 @@ class MotorControlCenter:
             self.total_spare_allocation + self.total_installed_kw
         )
 
-    # avg_substation_load_dist
-    # ss_ladders
+        self.max_voltage = max(me.voltage for me in self.mel)
+
+        self.contingency_factor = round_up(sum(me.spare_capacity for me in self.mel), 0)
+
+        self.total_actual_contingency = self.contingency_factor + self.total_max_kva
+
+        if self.total_actual_contingency <= 375:
+            self.tx_size = 500
+        elif self.total_actual_contingency <= 562.5:
+            self.tx_size = 750
+        elif self.total_actual_contingency <= 750:
+            self.tx_size = 1000
+        elif self.total_actual_contingency <= 1125:
+            self.tx_size = 1500
+        elif self.total_actual_contingency <= 1500:
+            self.tx_size = 2000
+        elif self.total_actual_contingency <= 1875:
+            self.tx_size = 2500
+        elif self.total_actual_contingency <= 3750:
+            self.tx_size = 5000
+        elif self.total_actual_contingency <= 6000:
+            self.tx_size = 8000
+        elif self.total_actual_contingency <= 7500:
+            self.tx_size = 10000
+        elif self.total_actual_contingency <= 8250:
+            self.tx_size = 11000
+
+        self.spare_tx = int(((self.tx_size - self.total_actual_contingency)/self.tx_size)*100)
+
+#@dataclass
+#class ElectricalLoadSummary:
+#    """Class for storing the MCC summary data."""
+
 
 
 @dataclass
