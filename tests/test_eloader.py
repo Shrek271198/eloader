@@ -169,3 +169,4 @@ def test_els():
     assert els.ave_load_kva == 425
     assert els.contingency_factor_kva == 68
     assert els.total_actual_contingency == 543
+    assert els.total_transformer_cost == 150000

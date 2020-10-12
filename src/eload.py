@@ -3,8 +3,13 @@ from enum import Enum
 from math import acos, ceil, tan
 from typing import List
 
-from data import (CONTINGENCY_TABLE, LOAD_FACTOR, MOTOR_POWER_FACTOR,
-                  TRANSFORMER_PRICING, VSD_CONTINGENCY)
+from data import (
+    CONTINGENCY_TABLE,
+    LOAD_FACTOR,
+    MOTOR_POWER_FACTOR,
+    TRANSFORMER_PRICING,
+    VSD_CONTINGENCY,
+)
 from dataclasses import dataclass, field
 from utility import round_up, vlookup
 
@@ -155,6 +160,7 @@ class UPSEquipment:
         except:
             self.avg_load_kva = 0
 
+
 @dataclass
 class FieldEquipment:
     """Class for Field Equipment details."""
@@ -278,7 +284,9 @@ class MechanicalEquipment:
 
         self.contingency_factor = vlookup(self.procurement_rating, CONTINGENCY_TABLE, 1)
 
-        self.spare_capacity = round(self.contingency_factor * round((self.kva*self.avg_load_factor), 1), 2)
+        self.spare_capacity = round(
+            self.contingency_factor * round((self.kva * self.avg_load_factor), 1), 2
+        )
 
 
 @dataclass
@@ -311,7 +319,6 @@ class MotorControlCenter:
     total_actual_contingency: float = field(init=False)
     tx_size: float = field(init=False)
     spare_tx: int = field(init=False)
-
 
     def __post_init__(self):
         self.total_installed_kw = round(
@@ -378,7 +385,7 @@ class MotorControlCenter:
             (
                 sum(e.avg_load_kva for e in self.mel)
                 + self.lighting.avg_load_kva
-                #+ self.ups.avg_load_kva
+                # + self.ups.avg_load_kva
                 + self.field_equipment.avg_load_kva
             ),
             1,
@@ -433,13 +440,14 @@ class MotorControlCenter:
         elif self.total_actual_contingency <= 8250:
             self.tx_size = 11000
 
-        self.spare_tx = int(((self.tx_size - self.total_actual_contingency)/self.tx_size)*100)
+        self.spare_tx = int(
+            ((self.tx_size - self.total_actual_contingency) / self.tx_size) * 100
+        )
 
 
 @dataclass
 class ElectricalLoadSummary:
     """Class for storing the MCC summary data."""
-
 
     mccl: List[MotorControlCenter] = field(default_factory=list)
 
@@ -460,32 +468,51 @@ class ElectricalLoadSummary:
 
     total_transformer_cost: int = field(init=False)
 
-
     def __post_init__(self):
 
-        self.connected_load_kw = round_up(sum(mcc.total_installed_kw for mcc in self.mccl))
+        self.connected_load_kw = round_up(
+            sum(mcc.total_installed_kw for mcc in self.mccl)
+        )
 
         self.connected_load_kva = round_up(sum(mcc.total_kva for mcc in self.mccl))
 
-        self.network_loss_kw = int(0.02 * (sum(ceil(mcc.total_max_kw) for mcc in self.mccl)))
+        self.network_loss_kw = int(
+            0.02 * (sum(ceil(mcc.total_max_kw) for mcc in self.mccl))
+        )
 
-        self.max_demand_kw = int(sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw)
+        self.max_demand_kw = int(
+            sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw
+        )
 
-        self.network_loss_kvar = int(0.02 * (sum(ceil(mcc.total_max_kvar) for mcc in self.mccl)))
+        self.network_loss_kvar = int(
+            0.02 * (sum(ceil(mcc.total_max_kvar) for mcc in self.mccl))
+        )
 
-        self.max_demand_kvar = int(sum(ceil(mcc.total_max_kvar) for mcc in self.mccl) + self.network_loss_kvar)
+        self.max_demand_kvar = int(
+            sum(ceil(mcc.total_max_kvar) for mcc in self.mccl) + self.network_loss_kvar
+        )
 
-        self.network_loss_kva = ceil(0.02 * (sum(mcc.total_max_kva for mcc in self.mccl)))
+        self.network_loss_kva = ceil(
+            0.02 * (sum(mcc.total_max_kva for mcc in self.mccl))
+        )
 
-        self.max_demand_kva = int(sum(mcc.total_max_kva for mcc in self.mccl) + self.network_loss_kva)
+        self.max_demand_kva = int(
+            sum(mcc.total_max_kva for mcc in self.mccl) + self.network_loss_kva
+        )
 
         self.ave_load_kva = int(sum(mcc.total_avg_load_kva for mcc in self.mccl))
 
-        self.contingency_factor_kva = int(sum(mcc.contingency_factor for mcc in self.mccl))
+        self.contingency_factor_kva = int(
+            sum(mcc.contingency_factor for mcc in self.mccl)
+        )
 
-        self.total_actual_contingency = int(sum(mcc.total_actual_contingency for mcc in self.mccl))
+        self.total_actual_contingency = int(
+            sum(mcc.total_actual_contingency for mcc in self.mccl)
+        )
 
-        self.total_transformer_cost =sum(vlookup(mcc.tx_size, TRANSFORMER_PRICING, 1) for mcc in self.mccl)
+        self.total_transformer_cost = sum(
+            vlookup(mcc.tx_size, TRANSFORMER_PRICING, 1) for mcc in self.mccl
+        )
 
 
 @dataclass
