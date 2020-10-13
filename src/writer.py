@@ -22,7 +22,8 @@ def mcc_writer(mccl, STANDARD):
     for mcc in mccl:
 
         # Copy and Create MCC excel files
-        mcc_output_file = "output/ELECTRICAL LOADS LIST SUBSTATION - {}.xlsx".format(mcc.name)
+        mcc_title = "ELECTRICAL LOADS LIST SUBSTATION - {}".format(mcc.name)
+        mcc_output_file = "output/{}.xlsx".format(mcc_title)
         try:
             copyfile(mcc_template, mcc_output_file)
         except IOError as e:
@@ -36,6 +37,20 @@ def mcc_writer(mccl, STANDARD):
         wb = load_workbook(filename=mcc_output_file)
         ws = wb.active
 
-        # Project Name
+        # Project Title
         ws["G1"] = STANDARD.project_name
+        ws["G4"] = mcc_title
+
+        # Project Details
+        ws["T1"] = STANDARD.project
+        ws["T2"] = STANDARD.revision
+        ws["T3"] = STANDARD.prepared_by
+        ws["T4"] = STANDARD.date_prepared
+        ws["T5"] = STANDARD.approved_by
+        ws["T6"] = STANDARD.date_approved
+
+
+
+
+
         wb.save(filename=mcc_output_file)
