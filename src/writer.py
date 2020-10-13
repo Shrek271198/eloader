@@ -113,7 +113,22 @@ def mcc_writer(els, STANDARD):
             ws.cell(row=start_row+i, column=18).value = misc.max_kva
             ws.cell(row=start_row+i, column=19).value = misc.avg_load_kw
 
+        # Insert Totals
+        start_row = 9 + len(mcc.mel) + 6
+        ws.cell(row=start_row, column=10).value = mcc.total_installed_kw
+        ws.cell(row=start_row, column=12).value = mcc.total_kva
+        ws.cell(row=start_row, column=16).value = mcc.total_max_kw
+        ws.cell(row=start_row, column=17).value = mcc.total_max_kvar
+        ws.cell(row=start_row, column=18).value = mcc.total_max_kva
+        ws.cell(row=start_row, column=19).value = mcc.total_avg_load_kw
+
         # Insert Contingency data
+        start_row = 9 + len(mcc.mel) + 8
+        ws.cell(row=start_row, column=10).value = str(int(mcc.contingency_factor_percent * 100))+'%'
+        ws.cell(row=start_row+1, column=10).value = mcc.spare_starters
+        ws.cell(row=start_row+2, column=10).value = mcc.contingency_load
+        ws.cell(row=start_row+3, column=10).value = mcc.total_spare_allocation
+        ws.cell(row=start_row+4, column=10).value = mcc.total_mcc_load_allowed
 
         # Adjust print area
         ws.print_area = "A1:S{}".format(21+len(mcc.mel))
