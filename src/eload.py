@@ -676,5 +676,5 @@ def eload(standards_file, mel_file):
 
     els = els_builder(STANDARD, MEL)
 
-    mcc_writer(els.mccl)
+    mcc_writer(els.mccl, STANDARD)
 
