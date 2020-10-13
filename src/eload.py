@@ -12,6 +12,7 @@ from data import (
 )
 from dataclasses import dataclass, field
 from utility import round_up, vlookup
+from writer import mcc_writer
 
 
 class OperationMode(Enum):
@@ -630,6 +631,7 @@ def read_client_mel(mel):
 
     return client_mel_builder(rows)
 
+
 def els_builder(STANDARD, MEL):
     """ This method builds and returns the ELS dataclass object."""
 
@@ -659,6 +661,7 @@ def els_builder(STANDARD, MEL):
 
     return els
 
+
 def eload(standards_file, mel_file):
     """Main eload CLI method that reads in the Project Standards and Client MEL Excel file
     to populate the relavant data classes and output the MCC and Electrical Load List
@@ -672,4 +675,6 @@ def eload(standards_file, mel_file):
     MEL = read_client_mel(mel_file)
 
     els = els_builder(STANDARD, MEL)
+
+    mcc_writer(els.mccl)
 
