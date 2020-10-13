@@ -1,6 +1,7 @@
-from eload import (FieldEquipment, LightingEquipment, MechanicalEquipment,
-                   MotorControlCenter, UPSEquipment, client_mel_builder,
-                   mcc_builder, me_builder, read_standards, read_client_mel, ElectricalLoadSummary)
+from eload import (ElectricalLoadSummary, FieldEquipment, LightingEquipment,
+                   MechanicalEquipment, MotorControlCenter, UPSEquipment,
+                   client_mel_builder, eload, mcc_builder, me_builder,
+                   read_client_mel, read_standards, els_builder)
 from utility import round_up
 
 
@@ -128,38 +129,16 @@ def test_mcc():
     assert mcc.spare_tx == 85
 
 
-def test_els():
+def test_els_builder():
 
     standards_file= "tests/fixtures/standards.xlsx"
     mel_file= "tests/fixtures/mel.xlsx"
 
-    # Read in Project Standards excel file
     STANDARD = read_standards(standards_file)
 
-    # Read in client Mechanical Equipment List
     MEL = read_client_mel(mel_file)
 
-    # Initialise Motor Control Centers
-    MCC_List = []
-    for number in MEL.mcc_numbers:
-
-        # Filter equipment by mcc_number
-        mcc_mel = []
-        for me in MEL.mel:
-            if me.mcc_number == number:
-                mcc_mel.append(me)
-
-        MCC = mcc_builder(
-            number,
-            STANDARD.lighting_load,
-            STANDARD.ups_load,
-            STANDARD.fe_dist_load,
-            mcc_mel,
-        )
-
-        MCC_List.append(MCC)
-
-    els = ElectricalLoadSummary(MCC_List)
+    els = els_builder(STANDARD, MEL)
 
     assert els.connected_load_kw == 546
     assert els.connected_load_kva == 642

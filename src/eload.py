@@ -630,20 +630,11 @@ def read_client_mel(mel):
 
     return client_mel_builder(rows)
 
-
-def eload(standards, mel):
-    """ Main eload CLI method that reads in the Project Standards and Client MEL Excel file
-        to populate the relavant data classes and output the MCC and Electrical Load List
-        Excel outputs.
-    """
-    # Read in Project Standards excel file
-    STANDARD = read_standards(standards)
-
-    # Read in client Mechanical Equipment List
-    MEL = read_client_mel(mel)
+def els_builder(STANDARD, MEL):
+    """ This method builds and returns the ELS dataclass object."""
 
     # Initialise Motor Control Centers
-    MCC = {}
+    MCC_List = []
     for number in MEL.mcc_numbers:
 
         # Filter equipment by mcc_number
@@ -652,10 +643,33 @@ def eload(standards, mel):
             if me.mcc_number == number:
                 mcc_mel.append(me)
 
-        MCC[number] = mcc_builder(
+        # Build a MCC
+        MCC = mcc_builder(
             number,
             STANDARD.lighting_load,
             STANDARD.ups_load,
             STANDARD.fe_dist_load,
             mcc_mel,
         )
+
+        MCC_List.append(MCC)
+
+    # Initialise Electrical Load Summary
+    els = ElectricalLoadSummary(MCC_List)
+
+    return els
+
+def eload(standards_file, mel_file):
+    """Main eload CLI method that reads in the Project Standards and Client MEL Excel file
+    to populate the relavant data classes and output the MCC and Electrical Load List
+    Excel outputs.
+    """
+
+    # Read in Project Standards excel file
+    STANDARD = read_standards(standards_file)
+
+    # Read in client Mechanical Equipment List
+    MEL = read_client_mel(mel_file)
+
+    els = els_builder(STANDARD, MEL)
+
