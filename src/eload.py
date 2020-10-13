@@ -291,7 +291,7 @@ class MechanicalEquipment:
 
 @dataclass
 class MotorControlCenter:
-    """Class for storing the electrical load details of a MCC."""
+    """Class for Motor Control Center details."""
 
     name: str
     lighting: LightingEquipment
@@ -447,7 +447,7 @@ class MotorControlCenter:
 
 @dataclass
 class ElectricalLoadSummary:
-    """Class for storing the MCC summary data."""
+    """Class for Motor Control Center summary details."""
 
     mccl: List[MotorControlCenter] = field(default_factory=list)
 
@@ -517,7 +517,7 @@ class ElectricalLoadSummary:
 
 @dataclass
 class ClientMechanicalEquipmentList:
-    """Class for Mechanical Equipment List."""
+    """Class for Client Mechanical Equipment List."""
 
     mel: List[MechanicalEquipment] = field(default_factory=list)
     mcc_numbers: list = field(init=False)
@@ -531,7 +531,7 @@ class ClientMechanicalEquipmentList:
 
 
 def read_standards(standards):
-    """ Create ProjectStandard object from a Project Standards excel file."""
+    """ This method creates a ProjectStandard object from a Project Standards excel file."""
 
     from openpyxl import load_workbook
 
@@ -570,7 +570,7 @@ def read_standards(standards):
 
 
 def me_builder(row):
-    """ Creats a Mechanical Equipment object"""
+    """ This method creates a Mechanical Equipment object."""
 
     me = MechanicalEquipment(
         str(row[0]),
@@ -591,7 +591,7 @@ def me_builder(row):
 
 
 def client_mel_builder(rows):
-    """ Creates a  ClientMechanicalEquipmentList from ME excel row data"""
+    """ This method creates a ClientMechanicalEquipmentList from ME excel row data."""
 
     me_list = []
 
@@ -605,7 +605,7 @@ def client_mel_builder(rows):
 
 
 def mcc_builder(name, lighting_load, ups_load, fe_dist_load, mcc_me_list):
-    """ Creates a MCC objecte"""
+    """ This method creates a MCC object."""
 
     mcc = MotorControlCenter(
         name,
@@ -619,7 +619,7 @@ def mcc_builder(name, lighting_load, ups_load, fe_dist_load, mcc_me_list):
 
 
 def read_client_mel(mel):
-    """Create a list of MechanicalEquipment objects from a MEL excel file."""
+    """This method creates a list of MechanicalEquipment objects from a MEL excel file."""
 
     from openpyxl import load_workbook
 
@@ -632,6 +632,10 @@ def read_client_mel(mel):
 
 
 def eload(standards, mel):
+    """ Main eload CLI method that reads in the Project Standards and Client MEL Excel file
+        to populate the relavant data classes and output the MCC and Electrical Load List
+        Excel outputs.
+    """
     # Read in Project Standards excel file
     STANDARD = read_standards(standards)
 
