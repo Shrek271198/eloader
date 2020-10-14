@@ -153,6 +153,7 @@ def els_writer(els, STANDARD):
     from sys import exit, exc_info
     from copy import copy
     from openpyxl.worksheet.properties import WorksheetProperties, PageSetupProperties
+    from openpyxl.styles import Alignment
 
     els_template = "src/templates/electrical_load_summary_template.xlsx"
 
@@ -187,7 +188,7 @@ def els_writer(els, STANDARD):
     for mcc in els.mccl:
         # Insert empty rows
         offset = 10
-        style_cell = "A2"
+        style_cell = "E17"
         ws.insert_rows(offset)
         # Apply style
         for row in ws.iter_cols(min_row=offset, max_row=offset, min_col=1, max_col=13):
@@ -198,7 +199,7 @@ def els_writer(els, STANDARD):
                 cell.fill = copy(ws[style_cell].fill)
                 cell.number_format = copy(ws[style_cell].number_format)
                 cell.protection = copy(ws[style_cell].protection)
-                cell.alignment = copy(ws[style_cell].alignment)
+                cell.alignment = Alignment(horizontal='center')
 
     # Insert MCC data
     start_row = offset
@@ -235,6 +236,6 @@ def els_writer(els, STANDARD):
     ws.cell(row=start_row, column=11).value = els.total_actual_contingency
 
     # Adjust print area
-    ws.print_area = "A1:M{}".format(59+len(els.mccl))
+    ws.print_area = "A1:M{}".format(19+len(els.mccl))
     # Save file
     wb.save(filename=power_summary_output_file)
