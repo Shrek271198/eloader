@@ -149,3 +149,7 @@ def test_els_builder():
     assert els.contingency_factor_kva == 68
     assert els.total_actual_contingency == 543
     assert els.total_transformer_cost == 150000
+
+    assert els.network_loss_kw == 8
+    assert els.network_loss_kvar == 6
+    assert els.network_loss_kva == 10

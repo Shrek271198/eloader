@@ -12,7 +12,7 @@ from data import (
 )
 from dataclasses import dataclass, field
 from utility import round_up, vlookup
-from writer import mcc_writer
+from writer import mcc_writer, els_writer, clear_output
 
 
 class OperationMode(Enum):
@@ -485,12 +485,12 @@ class ElectricalLoadSummary:
             sum(mcc.total_max_kw for mcc in self.mccl) + self.network_loss_kw
         )
 
-        self.network_loss_kvar = int(
+        self.network_loss_kvar = round(
             0.02 * (sum(ceil(mcc.total_max_kvar) for mcc in self.mccl))
         )
 
         self.max_demand_kvar = int(
-            sum(ceil(mcc.total_max_kvar) for mcc in self.mccl) + self.network_loss_kvar
+            sum(mcc.total_max_kvar for mcc in self.mccl) + self.network_loss_kvar
         )
 
         self.network_loss_kva = ceil(
@@ -674,7 +674,15 @@ def eload(standards_file, mel_file):
     # Read in client Mechanical Equipment List
     MEL = read_client_mel(mel_file)
 
+    # Build data classes
     els = els_builder(STANDARD, MEL)
 
+    # Clear output directory
+    clear_output()
+
+    # Write MCC output
     mcc_writer(els, STANDARD)
+
+    # Write ELS output
+    els_writer(els, STANDARD)
 
