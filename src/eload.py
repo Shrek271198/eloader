@@ -460,8 +460,6 @@ class ElectricalLoadSummary:
     ave_load_kva: int = field(init=False)
     contingency_factor_kva: int = field(init=False)
     total_actual_contingency: int = field(init=False)
-    tx_size: int = field(init=False)
-    spare_tx: int = field(init=False)
 
     network_loss_kw: int = field(init=False)
     network_loss_kvar: int = field(init=False)

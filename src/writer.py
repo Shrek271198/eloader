@@ -58,12 +58,13 @@ def mcc_writer(els, STANDARD):
 
         # Update Inserted Row style
         count =  1
+        offset = 9
         for me in mcc.mel:
             # Insert empty rows
-            ws.insert_rows(9)
-            style_cell = "B" + str(9+count)
+            ws.insert_rows(offset)
+            style_cell = "B" + str(offset+count)
             # Apply style
-            for row in ws.iter_cols(min_row=9, max_row=9, min_col=1, max_col=19):
+            for row in ws.iter_cols(min_row=offset, max_row=offset, min_col=1, max_col=19):
                 for cell in row:
                     cell.style = copy(ws[style_cell].style)
                     cell.font = copy(ws[style_cell].font)
@@ -74,7 +75,7 @@ def mcc_writer(els, STANDARD):
                     cell.alignment = copy(ws[style_cell].alignment)
 
         # Insert Mechanical Equipment data
-        start_row = 9
+        start_row = offset
         for i, me in enumerate(mcc.mel):
             ws.cell(row=start_row+i, column=1).value = me.tag_number
             ws.cell(row=start_row+i, column=2).value = me.rev
@@ -97,7 +98,7 @@ def mcc_writer(els, STANDARD):
             ws.cell(row=start_row+i, column=19).value = me.avg_load_kw
 
         # Insert Misc Equiptment data
-        start_row = 9 + len(mcc.mel) + 2
+        start_row = offset + len(mcc.mel) + 2
         for i, misc in enumerate([mcc.lighting, mcc.ups, mcc.field_equipment]):
             ws.cell(row=start_row+i, column=6).value = 240
             ws.cell(row=start_row+i, column=10).value = misc.installed_kw
@@ -112,7 +113,7 @@ def mcc_writer(els, STANDARD):
             ws.cell(row=start_row+i, column=19).value = misc.avg_load_kw
 
         # Insert Totals
-        start_row = 9 + len(mcc.mel) + 6
+        start_row = offset + len(mcc.mel) + 6
         ws.cell(row=start_row, column=10).value = mcc.total_installed_kw
         ws.cell(row=start_row, column=12).value = mcc.total_kva
         ws.cell(row=start_row, column=16).value = mcc.total_max_kw
@@ -121,7 +122,7 @@ def mcc_writer(els, STANDARD):
         ws.cell(row=start_row, column=19).value = mcc.total_avg_load_kw
 
         # Insert Contingency data
-        start_row = 9 + len(mcc.mel) + 8
+        start_row = offset + len(mcc.mel) + 8
         ws.cell(row=start_row, column=10).value = str(int(mcc.contingency_factor_percent * 100))+'%'
         ws.cell(row=start_row+1, column=10).value = mcc.spare_starters
         ws.cell(row=start_row+2, column=10).value = mcc.contingency_load
@@ -185,9 +186,9 @@ def els_writer(els, STANDARD):
 
     # Update Inserted Row style
     count =  1
+    offset = 10
     for mcc in els.mccl:
         # Insert empty rows
-        offset = 10
         style_cell = "E17"
         ws.insert_rows(offset)
         # Apply style
