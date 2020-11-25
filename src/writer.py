@@ -1,8 +1,13 @@
 def clear_output():
     import os, re, os.path
 
-    mypath = "output"
-    for root, dirs, files in os.walk(mypath):
+    folder = "output"
+
+    # Create folder if it does not exist
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    for root, dirs, files in os.walk(folder):
         for file in files:
             os.remove(os.path.join(root, file))
 
