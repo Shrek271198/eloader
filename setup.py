@@ -1,21 +1,24 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
+requirements = [
+    "click==7.1.2",
+    "openpyxl==3.0.5",
+]
 
 setup(
-    name='eload',
-    version='0.1.1',
-    license='proprietary',
-    description='eMax Eload CLI',
-
-    author='Devan Rehunathan',
-    author_email='devan.rehunathan@technogen.com.au',
-    url='https://www.technogen.com.au/',
-    packages=find_packages(where='src'),
+    name="eload",
+    version="0.1.1",
+    license="proprietary",
+    description="eMax E-Load CLI",
+    author="Devan Rehunathan",
+    author_email="devan.rehunathan@technogen.com.au",
+    url="https://www.technogen.com.au/",
     package_dir={'': 'src'},
-    install_requires=['click', 'pytest', 'openpyxl'],
-    extras_require={},
+    py_modules=["cli", "eload", "data", "writer", "utility"],
+    install_requires=requirements,
     entry_points={
-        'console_scripts': [
-            'eloader = cli:main',
+        "console_scripts": [
+            "eloader = cli.main",
         ]
     },
 )
