@@ -12,10 +12,10 @@ jobs:
           command: |
             python setup.py install
           name: Install packages
-      - python/install-packages:
-          args: pytest
-          pkg-manager: pip
-          pypi-cache: false
+      - run:
+          command: |
+            pip install pytest
+          name: Install pytest
       - run:
           command: |
             pytest
