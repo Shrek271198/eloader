@@ -10,7 +10,7 @@ jobs:
       - checkout
       - run:
           command: |
-            pip install .
+            python setup.py install
           name: Install packages
       - python/install-packages:
           args: pytest
