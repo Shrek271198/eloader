@@ -571,20 +571,23 @@ def read_standards(standards):
 def me_builder(row):
     """ This method creates a Mechanical Equipment object."""
 
-    me = MechanicalEquipment(
-        str(row[0]),
-        str(row[1]),
-        str(row[2]),
-        str(row[3]),
-        str(row[4]),
-        str(row[5]),
-        float(row[6]),
-        str(row[7]),
-        float(row[8]),
-        row[9],
-        str(row[10]),
-        str(row[11]),
-    )
+    try:
+        me = MechanicalEquipment(
+            str(row[0]),
+            str(row[1]),
+            str(row[2]),
+            str(row[3]),
+            str(row[4]),
+            str(row[5]),
+            float(row[6]),
+            str(row[7]),
+            float(row[8]),
+            row[9],
+            str(row[10]),
+            str(row[11]),
+        )
+    except BaseException as error:
+        print("Incorrect input format building MechanicalEquipment object.")
 
     return me
 
