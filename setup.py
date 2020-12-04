@@ -18,7 +18,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "eloader = cli.main",
+            "eloader = cli.main [standards, mel]",
         ]
     },
 )
